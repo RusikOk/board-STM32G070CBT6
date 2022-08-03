@@ -1,9 +1,6 @@
 # board-STM32G070CBT6
-купил попробовать семейство G0xx
-<br>
+купил попробовать семейство G0xx. внешний вид:
+<img src="https://github.com/RusikOk/board-STM32G070CBT6/blob/main/7_%D1%84%D0%BE%D1%82%D0%BE/main.jpg" alt="">
 
-<img src="https://github.com/RusikOk/board-STM32F411RET6-Terraelectronica/blob/main/6_%D1%84%D0%BE%D1%82%D0%BE/terraelectronica%20TE-STM32F103RET6%20KIT%20v100%20top.jpg" alt="">
-внешний вид
-
-<img src="https://github.com/RusikOk/board-STM32F411RET6-Terraelectronica/blob/main/6_%D1%84%D0%BE%D1%82%D0%BE/terraelectronica%20TE-STM32F103RET6%20KIT%20v101%20top.jpg" alt="">
-понравился навороченный юарт со своим FIFO
+понравился навороченный юарт со своим FIFO:
+<img src="https://github.com/RusikOk/board-STM32G070CBT6/blob/main/7_%D1%84%D0%BE%D1%82%D0%BE/uart.png" alt="">
