@@ -41,3 +41,10 @@ $RECYCLE.BIN/
 *.out
 *.map
 *.o
+
+# Eclipse / STM32cubeIDE
+.metadata
+.settings
+[Rr]elease
+[Dd]ebug
+.launch
