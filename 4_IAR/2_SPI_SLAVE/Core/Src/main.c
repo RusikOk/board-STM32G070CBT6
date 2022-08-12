@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "stm32g070xx.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -31,13 +31,13 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define MASTER_TX_BUF_LEN       1024
-#define MASTER_RX_BUS_LEN       MASTER_TX_BUF_LEN
-#define SLAVE_TX_BUF_LEN        MASTER_TX_BUF_LEN
-#define SLAVE_RX_BUS_LEN        MASTER_TX_BUF_LEN
+#define MASTER_TX_RX_BUF_LEN    1024
+#define SLAVE_TX_RX_BUF_LEN     MASTER_TX_RX_BUF_LEN
 
-#define SPI2_NSS_H2L()          HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_RESET)
-#define SPI2_NSS_L2H()          HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_SET)
+/*#define SPI2_NSS_H2L()          HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_RESET)
+#define SPI2_NSS_L2H()          HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_SET)*/
+#define SPI2_NSS_H2L()          SPI2_NSS_GPIO_Port->BRR = (uint32_t)SPI2_NSS_Pin
+#define SPI2_NSS_L2H()          SPI2_NSS_GPIO_Port->BSRR = (uint32_t)SPI2_NSS_Pin
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -54,10 +54,10 @@ DMA_HandleTypeDef hdma_spi2_rx;
 DMA_HandleTypeDef hdma_spi2_tx;
 
 /* USER CODE BEGIN PV */
-uint16_t        masterTxBuf[MASTER_TX_BUF_LEN];
-uint16_t        masterRxBuf[MASTER_RX_BUS_LEN];
-uint16_t        slaveTxBuf[SLAVE_TX_BUF_LEN];
-uint16_t        slaveRxBuf[SLAVE_RX_BUS_LEN];
+uint16_t        masterTxBuf[MASTER_TX_RX_BUF_LEN];
+uint16_t        masterRxBuf[MASTER_TX_RX_BUF_LEN];
+uint16_t        slaveTxBuf[SLAVE_TX_RX_BUF_LEN];
+uint16_t        slaveRxBuf[SLAVE_TX_RX_BUF_LEN];
 uint32_t        time;
 /* USER CODE END PV */
 
@@ -73,29 +73,52 @@ void protocol(uint16_t *buf, uint32_t len);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+
+/**
+  * @brief  exchange protocol implementation
+  * @param[in]  data buffer
+  * @param[in]  data length
+  * @retval None
+  */
 void protocol(uint16_t *buf, uint32_t len)
 {
-        // заглушка 
+        // we get here only if we get a full-size buffer
 }
 
+/**
+  * @brief  Tx and Rx Transfer completed callback.
+  * @param  hspi pointer to a SPI_HandleTypeDef structure that contains the configuration information for SPI module.
+  * @retval None
+  */
 void HAL_SPI_TxRxCpltCallback(SPI_HandleTypeDef *hspi)
 {
         if(hspi->Instance == SPI1)
         {
-                protocol(slaveRxBuf, SLAVE_RX_BUS_LEN);
+                protocol(slaveRxBuf, SLAVE_TX_RX_BUF_LEN);
         }
 }
 
+/**
+  * @brief  EXTI line detection callback.
+  * @param  GPIO_Pin Specifies the port pin connected to corresponding EXTI line.
+  * @retval None
+  */
 void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
-{
-        HAL_SPI_Receive_DMA(&hspi1, (uint8_t *)&slaveRxBuf, SLAVE_RX_BUS_LEN); // slave receive
+{        
+        HAL_SPI_TransmitReceive_DMA(&hspi1, (uint8_t *)&slaveTxBuf, (uint8_t *)&slaveRxBuf, SLAVE_TX_RX_BUF_LEN);
+        GPIOC->BRR =  0xffffffff; // устанавливаем 0 на всем порте
 }
 
+/**
+  * @brief  EXTI line detection callback.
+  * @param  GPIO_Pin Specifies the port pin connected to corresponding EXTI line.
+  * @retval None
+  */
 void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin)
 {
         if(hdma_spi1_rx.Instance->CNDTR)
         {
-                uint32_t Len = SLAVE_RX_BUS_LEN - hdma_spi1_rx.Instance->CNDTR; // количество полученых слов
+                uint32_t Len = SLAVE_TX_RX_BUF_LEN - hdma_spi1_rx.Instance->CNDTR; // количество полученых слов
                 HAL_SPI_DMAStop(&hspi1);
         }
 }
@@ -133,26 +156,10 @@ int main(void)
   MX_SPI1_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-        for(uint16_t i = 0;  i < MASTER_TX_BUF_LEN; i++) // генерируем набор данных для удобства отслеживания изменений в режиме отладки
-                masterTxBuf[i] = MASTER_TX_BUF_LEN - i - 1;
-        for(uint16_t i = 0;  i < SLAVE_TX_BUF_LEN; i++) // генерируем набор данных для удобства отслеживания изменений в режиме отладки
-                slaveTxBuf[i]  = SLAVE_TX_BUF_LEN - i - 1;
-   
-        // прием данных SPI мастером по DMA 
-        //HAL_SPI_Receive_DMA(&hspi1, (uint8_t *)&spi1buf, SPI1LEN); // master receive use NSS signal +
-  
-        // передача данных по SPI слейвом
-        //HAL_SPI_Transmit_DMA(&hspi1, (uint8_t *)&spi2buf, SPI2LEN); // master transmit +
-        //HAL_SPI_Transmit(&hspi1, (uint8_t *)&spi2buf, SPI2LEN, 5000); // master transmit +
-        //HAL_SPI_Transmit_DMA(&hspi2, (uint8_t *)&spi2buf, SPI2LEN / 2); // slave transmit use NSS signal +
-        //HAL_SPI_Transmit(&hspi2, (uint8_t *)&spi2buf, SPI2LEN, 5000); // slave transmit use NSS signal +
-
-        // прием данных мастером
-        //HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)&spi1buf, SPI1LEN); // slave receave -
-        //HAL_SPI_Receive(&hspi2, (uint8_t *)&spi1buf, SPI1LEN, 5000); // slave receive +
-        //HAL_SPI_Receive(&hspi1, (uint8_t *)&spi1buf, SPI1LEN, 5000); // master receive use NSS signal +
-               
-        
+        for(uint16_t i = 0;  i < MASTER_TX_RX_BUF_LEN; i++) // generate a set of data for easy tracking of changes in debug mode
+                masterTxBuf[i] = MASTER_TX_RX_BUF_LEN - i - 1;
+        for(uint16_t i = 0;  i < SLAVE_TX_RX_BUF_LEN; i++) // generate a set of data for easy tracking of changes in debug mode
+                slaveTxBuf[i]  = SLAVE_TX_RX_BUF_LEN - i - 1;
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -160,11 +167,12 @@ int main(void)
   while(1)
   {
           time = HAL_GetTick();
+          GPIOC->BSRR = 0xffffffff; // устанавливаем 1 на всем порте
           SPI2_NSS_H2L();
           //HAL_Delay(1);
-          //HAL_SPI_Transmit(&hspi2, (uint8_t *)&masterTxBuf, MASTER_TX_BUF_LEN, 2000); // master transmit
-          HAL_SPI_Transmit_DMA(&hspi2, (uint8_t *)&masterTxBuf, MASTER_TX_BUF_LEN - 10); // master transmit DMA
-          while(hdma_spi2_tx.Instance->CNDTR);
+          //HAL_SPI_TransmitReceive(&hspi2, (uint8_t *)&masterTxBuf, (uint8_t *)&masterRxBuf, MASTER_TX_BUF_LEN, 2000);
+          HAL_SPI_TransmitReceive_DMA(&hspi2, (uint8_t *)&masterTxBuf, (uint8_t *)&masterRxBuf, MASTER_TX_RX_BUF_LEN);
+          while(hdma_spi2_tx.Instance->CNDTR); // wait for the end of the data transfer
           SPI2_NSS_L2H();
           time = HAL_GetTick() - time;
           uint8_t c = 0;
@@ -216,6 +224,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+  HAL_RCC_MCOConfig(RCC_MCO1, RCC_MCO1SOURCE_SYSCLK, RCC_MCODIV_2);
 }
 
 /**
@@ -337,6 +346,12 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_SET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_6, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, TEST_POINT_1_Pin|TEST_POINT_2_Pin|TEST_POINT_3_Pin|TEST_POINT_4_Pin, GPIO_PIN_RESET);
+
   /*Configure GPIO pin : KEY_Pin */
   GPIO_InitStruct.Pin = KEY_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
@@ -349,12 +364,38 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(SPI1_NSS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : SPI2_NSS_Pin */
-  GPIO_InitStruct.Pin = SPI2_NSS_Pin;
+  /*Configure GPIO pins : SPI2_NSS_Pin TEST_POINT_1_Pin TEST_POINT_2_Pin TEST_POINT_3_Pin
+                           TEST_POINT_4_Pin */
+  GPIO_InitStruct.Pin = SPI2_NSS_Pin|TEST_POINT_1_Pin|TEST_POINT_2_Pin|TEST_POINT_3_Pin
+                          |TEST_POINT_4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  HAL_GPIO_Init(SPI2_NSS_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PA8 */
+  GPIO_InitStruct.Pin = GPIO_PIN_8;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  GPIO_InitStruct.Alternate = GPIO_AF0_MCO;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PC6 */
+  GPIO_InitStruct.Pin = GPIO_PIN_6;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /**/
+  __HAL_SYSCFG_FASTMODEPLUS_ENABLE(SYSCFG_FASTMODEPLUS_PB6);
+
+  /**/
+  __HAL_SYSCFG_FASTMODEPLUS_ENABLE(SYSCFG_FASTMODEPLUS_PB7);
+
+  /**/
+  __HAL_SYSCFG_FASTMODEPLUS_ENABLE(SYSCFG_FASTMODEPLUS_PB8);
 
   /* EXTI interrupt init*/
   HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);

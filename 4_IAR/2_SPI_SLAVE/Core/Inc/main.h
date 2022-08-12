@@ -64,6 +64,14 @@ void Error_Handler(void);
 #define SPI1_NSS_EXTI_IRQn EXTI0_1_IRQn
 #define SPI2_NSS_Pin GPIO_PIN_12
 #define SPI2_NSS_GPIO_Port GPIOB
+#define TEST_POINT_1_Pin GPIO_PIN_5
+#define TEST_POINT_1_GPIO_Port GPIOB
+#define TEST_POINT_2_Pin GPIO_PIN_6
+#define TEST_POINT_2_GPIO_Port GPIOB
+#define TEST_POINT_3_Pin GPIO_PIN_7
+#define TEST_POINT_3_GPIO_Port GPIOB
+#define TEST_POINT_4_Pin GPIO_PIN_8
+#define TEST_POINT_4_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
