@@ -14,13 +14,14 @@
 
 ## 2_SPI_SLAVE
 
-проверка времени реакции на программный NSS сигнал
+проверка времени реакции на программный NSS сигнал. 
+как оказалось у M0 серии нету счетчика тактов ни CYCLECOUNTER, ни даже DWT_CYCCNT. потому началось веселье с ногодрыгом и осциллографом)
 
 ### дергаем всема ножками МК на порту PC используя CMSIS 
 
 <img src="https://github.com/RusikOk/board-STM32G070CBT6/blob/main/7_%D1%84%D0%BE%D1%82%D0%BE/2_SPI_SLAVE/SDS00009.BMP" alt="">
 
-```ini
+```c++
 int main(void)
 {
   while(1)
