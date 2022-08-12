@@ -45,7 +45,7 @@ int main(void)
   while(1)
   {
           GPIOC->BSRR = 0xffffffff; // устанавливаем 1 на всем порте
-		  SPI2_NSS_H2L();
+          SPI2_NSS_H2L();
           GPIOC->BRR =  0xffffffff; // устанавливаем 0 на всем порте
           HAL_Delay(100);
   }
@@ -71,8 +71,7 @@ int main(void)
   while(1)
   {
           GPIOC->BSRR = 0xffffffff; // устанавливаем 1 на всем порте
-		  SPI2_NSS_H2L();
-          GPIOC->BRR =  0xffffffff; // устанавливаем 0 на всем порте
+          SPI2_NSS_H2L();
           HAL_Delay(100);
   }
 }
@@ -97,8 +96,7 @@ int main(void)
   while(1)
   {
           GPIOC->BSRR = 0xffffffff; // устанавливаем 1 на всем порте
-		  SPI2_NSS_H2L();
-          GPIOC->BRR =  0xffffffff; // устанавливаем 0 на всем порте
+          SPI2_NSS_H2L();
           HAL_Delay(100);
   }
 }
@@ -123,8 +121,7 @@ int main(void)
   while(1)
   {
           GPIOC->BSRR = 0xffffffff; // устанавливаем 1 на всем порте
-		  SPI2_NSS_H2L();
-          GPIOC->BRR =  0xffffffff; // устанавливаем 0 на всем порте
+          SPI2_NSS_H2L();
           HAL_Delay(100);
   }
 }
@@ -149,8 +146,7 @@ int main(void)
   while(1)
   {
           GPIOC->BSRR = 0xffffffff; // устанавливаем 1 на всем порте
-		  SPI2_NSS_H2L();
-          GPIOC->BRR =  0xffffffff; // устанавливаем 0 на всем порте
+          SPI2_NSS_H2L();
           HAL_Delay(100);
   }
 }
