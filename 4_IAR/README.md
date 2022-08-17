@@ -37,7 +37,7 @@ int main(void)
 
 <img src="https://github.com/RusikOk/board-STM32G070CBT6/blob/main/7_%D1%84%D0%BE%D1%82%D0%BE/2_SPI_SLAVE/SDS00010.BMP" alt="">
 
-```ini
+```c++
 #define SPI2_NSS_H2L()          HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_RESET)
 #define SPI2_NSS_L2H()          HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_SET)
 
@@ -57,7 +57,7 @@ int main(void)
 
 <img src="https://github.com/RusikOk/board-STM32G070CBT6/blob/main/7_%D1%84%D0%BE%D1%82%D0%BE/2_SPI_SLAVE/SDS00011.BMP" alt="">
 
-```ini
+```c++
 #define SPI2_NSS_H2L()          HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_RESET)
 #define SPI2_NSS_L2H()          HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_SET)
 
@@ -82,7 +82,7 @@ int main(void)
 
 <img src="https://github.com/RusikOk/board-STM32G070CBT6/blob/main/7_%D1%84%D0%BE%D1%82%D0%BE/2_SPI_SLAVE/SDS00012.BMP" alt="">
 
-```ini
+```c++
 #define SPI2_NSS_H2L()          HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_RESET)
 #define SPI2_NSS_L2H()          HAL_GPIO_WritePin(SPI2_NSS_GPIO_Port, SPI2_NSS_Pin, GPIO_PIN_SET)
 
@@ -107,7 +107,7 @@ int main(void)
 
 <img src="https://github.com/RusikOk/board-STM32G070CBT6/blob/main/7_%D1%84%D0%BE%D1%82%D0%BE/2_SPI_SLAVE/SDS00013.BMP" alt="">
 
-```ini
+```c++
 #define SPI2_NSS_H2L()          SPI2_NSS_GPIO_Port->BRR = (uint32_t)SPI2_NSS_Pin
 #define SPI2_NSS_L2H()          SPI2_NSS_GPIO_Port->BSRR = (uint32_t)SPI2_NSS_Pin
 
@@ -132,7 +132,7 @@ int main(void)
 
 <img src="https://github.com/RusikOk/board-STM32G070CBT6/blob/main/7_%D1%84%D0%BE%D1%82%D0%BE/2_SPI_SLAVE/SDS00012.BMP" alt="">
 
-```ini
+```c++
 #define SPI2_NSS_H2L()          SPI2_NSS_GPIO_Port->BRR = (uint32_t)SPI2_NSS_Pin
 #define SPI2_NSS_L2H()          SPI2_NSS_GPIO_Port->BSRR = (uint32_t)SPI2_NSS_Pin
 
@@ -152,3 +152,7 @@ int main(void)
   }
 }
 ```
+
+ссылки:<br>
+<a href="http://microsin.net/programming/arm/iar-techniques-for-measuring-the-elapsed-time-stm32.html">IAR: техники измерения времени выполнения кода STM32</a><br>
+<a href="https://hubstub.ru/stm32/82-vremya-vipolneniya-koda-stm32.html">Время выполнения кода STM32</a><br>
