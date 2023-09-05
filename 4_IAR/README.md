@@ -153,6 +153,11 @@ int main(void)
 }
 ```
 
+## 3_UART_2byte_LLdriver
+
+расбераюсь с устройством LL драйвера
+
+
 ссылки:<br>
 <a href="http://microsin.net/programming/arm/iar-techniques-for-measuring-the-elapsed-time-stm32.html">IAR: техники измерения времени выполнения кода STM32</a><br>
 <a href="https://hubstub.ru/stm32/82-vremya-vipolneniya-koda-stm32.html">Время выполнения кода STM32</a><br>
