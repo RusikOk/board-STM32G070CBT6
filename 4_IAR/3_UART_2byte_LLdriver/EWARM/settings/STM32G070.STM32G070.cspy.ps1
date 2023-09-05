@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.20\common\bin\cspybat" -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\2_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.general.xcl" --backend -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\2_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.20\common\bin\cspybat" -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\3_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.general.xcl" --backend -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\3_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.driver.xcl" 
 }
 else
 {
-& "C:\Program Files\IAR Systems\Embedded Workbench 9.20\common\bin\cspybat" -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\2_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.general.xcl" --debug_file=$debugfile --backend -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\2_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.driver.xcl" 
+& "C:\Program Files\IAR Systems\Embedded Workbench 9.20\common\bin\cspybat" -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\3_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.general.xcl" --debug_file=$debugfile --backend -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\3_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.driver.xcl" 
 }

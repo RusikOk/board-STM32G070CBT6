@@ -25,7 +25,7 @@ if not "%~1" == "" goto debugFile
 
 @echo on 
 
-"C:\Program Files\IAR Systems\Embedded Workbench 9.20\common\bin\cspybat" -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\2_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.general.xcl" --backend -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\2_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.driver.xcl" 
+"C:\Program Files\IAR Systems\Embedded Workbench 9.20\common\bin\cspybat" -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\3_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.general.xcl" --backend -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\3_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\Program Files\IAR Systems\Embedded Workbench 9.20\common\bin\cspybat" -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\2_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.general.xcl" "--debug_file=%~1" --backend -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\2_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.driver.xcl" 
+"C:\Program Files\IAR Systems\Embedded Workbench 9.20\common\bin\cspybat" -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\3_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.general.xcl" "--debug_file=%~1" --backend -f "D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\3_UART_2byte_LLdriver\EWARM\settings\STM32G070.STM32G070.driver.xcl" 
 
 @echo off 
 :end
