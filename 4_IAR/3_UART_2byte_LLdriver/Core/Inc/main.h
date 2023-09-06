@@ -49,12 +49,18 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-
+#define UART1LEN	32	        /* длина буфера для uart1 */
+        
+typedef union 
+{
+        uint8_t u8[UART1LEN / sizeof(uint8_t)];
+        uint16_t u16[UART1LEN / sizeof(uint16_t)];
+} u8u16_t;
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#define UART1LEN	1024	        /* длина буфера для uart1 */
+
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/

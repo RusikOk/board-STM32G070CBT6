@@ -41,7 +41,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-extern uint16_t        uart1buf[UART1LEN];
+extern u8u16_t         uart1buf;
 extern uint16_t        uart1index;
 /* USER CODE END PV */
 
@@ -149,23 +149,9 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 0 */
 	if(LL_USART_IsActiveFlag_RXNE(USART1) && LL_USART_IsEnabledIT_RXNE(USART1))
 	{
-                uart1buf[uart1index++] = LL_USART_ReceiveData8(USART1);
-                if(uart1index >= UART1LEN) // не допускаем выхода за пределы массива
-                        uart1index = 0;
+                uart1buf.u8[uart1index++] = LL_USART_ReceiveData8(USART1);
+                uart1index %= UART1LEN; // не допускаем выхода за пределы массива
 	}
-        
-        
-        
-        
-                // не интересный вариант с промежуточным буфером
-                //spi2buf[spi2index++] = (uart1buf[0] << 8) | uart1buf[1]; // переписываем полученные данные в выходной массив
-                //HAL_UART_Receive_IT(&huart1, (uint8_t *)&uart1buf, 2); // получаем 2 восьмибитных слова по прерыванию UART
-                
-                // интересный вариант приема данных сразу в целевой массив
-                //HAL_UART_Receive_IT(&huart1, (uint8_t *)&uart1buf[uart1index++], 2); // получаем 2 восьмибитных слова по прерыванию UART
-                
-        
-        
   /* USER CODE END USART1_IRQn 0 */
   /* USER CODE BEGIN USART1_IRQn 1 */
 
