@@ -1,25 +1,25 @@
-"D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal.c"
+"D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal.c"
 -std=c11
 -ferror-limit=0
 -fbracket-depth=512
 -funsigned-char
 -MD
 -MF
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\EWARM\STM32G070\BrowseInfo\Drivers\STM32G0xx_HAL_Driver\stm32g0xx_hal.pbi.dep
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\STM32G070\BrowseInfo\Drivers\STM32G0xx_HAL_Driver\stm32g0xx_hal.pbi.dep
 -o
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\EWARM\STM32G070\BrowseInfo\Drivers\STM32G0xx_HAL_Driver\stm32g0xx_hal.pbi
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\STM32G070\BrowseInfo\Drivers\STM32G0xx_HAL_Driver\stm32g0xx_hal.pbi
 -I
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\Drivers\STM32G0xx_HAL_Driver\Src
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\Drivers\STM32G0xx_HAL_Driver\Src
 -I
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\EWARM/../Core/Inc\
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM/../Core/Inc\
 -I
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\EWARM/../Drivers/STM32G0xx_HAL_Driver/Inc\
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM/../Drivers/STM32G0xx_HAL_Driver/Inc\
 -I
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\EWARM/../Drivers/STM32G0xx_HAL_Driver/Inc/Legacy\
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM/../Drivers/STM32G0xx_HAL_Driver/Inc/Legacy\
 -I
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\EWARM/../Drivers/CMSIS/Device/ST/STM32G0xx/Include\
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM/../Drivers/CMSIS/Device/ST/STM32G0xx/Include\
 -I
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\EWARM/../Drivers/CMSIS/Include\
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM/../Drivers/CMSIS/Include\
 -I
 C:\Program Files\IAR Systems\Embedded Workbench 9.20\arm\inc\c\aarch32
 -I
@@ -27,15 +27,15 @@ C:\Program Files\IAR Systems\Embedded Workbench 9.20\arm\inc
 -I
 C:\Program Files\IAR Systems\Embedded Workbench 9.20\arm\inc\c
 -I
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\Core\Inc
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\Core\Inc
 -I
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\Drivers\STM32G0xx_HAL_Driver\Inc
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\Drivers\STM32G0xx_HAL_Driver\Inc
 -I
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\Drivers\STM32G0xx_HAL_Driver\Inc\Legacy
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\Drivers\STM32G0xx_HAL_Driver\Inc\Legacy
 -I
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\Drivers\CMSIS\Device\ST\STM32G0xx\Include
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\Drivers\CMSIS\Device\ST\STM32G0xx\Include
 -I
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\Drivers\CMSIS\Include
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\Drivers\CMSIS\Include
 -D__CHAR_BITS__=8
 -D__CHAR_MAX__=0xff
 -D__CHAR_MIN__=0
@@ -344,6 +344,7 @@ D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\1_SPI_UART_2byte\Drivers\
 -D__EDG_INT128_EXTENSIONS_ALLOWED=0
 -DUSE_HAL_DRIVER=1
 -DSTM32G070xx=1
+-DUSE_FULL_LL_DRIVER=1
 -D_DLIB_CONFIG_FILE_HEADER_NAME="C:\Program Files\IAR Systems\Embedded Workbench 9.20\arm\inc\c\DLib_Config_Full.h"
 -D_DLIB_CONFIG_FILE_STRING="C:\\Program Files\\IAR Systems\\Embedded Workbench 9.20\\arm\\inc\\c\\DLib_Config_Full.h"
 -D__VERSION__="IAR ANSI C/C++ Compiler V9.20.1.318/W64 for ARM"

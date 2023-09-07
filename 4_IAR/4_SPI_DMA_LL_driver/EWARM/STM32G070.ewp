@@ -220,6 +220,7 @@
           <name>CCDefines</name>
           <state>USE_HAL_DRIVER</state>
           <state>STM32G070xx</state>
+          <state>USE_FULL_LL_DRIVER</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1100,10 +1101,16 @@
     <group>
       <name>STM32G0xx_HAL_Driver</name>
       <file>
-        <name>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_spi.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_ll_gpio.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_spi_ex.c</name>
+        <name>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_ll_exti.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_ll_dma.c</name>
+      </file>
+      <file>
+        <name>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_ll_spi.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal_rcc.c</name>
@@ -1130,9 +1137,6 @@
         <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal_dma_ex.c</name>
       </file>
       <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_ll_dma.c</name>
-      </file>
-      <file>
         <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal_pwr.c</name>
       </file>
       <file>
@@ -1148,16 +1152,13 @@
         <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal_exti.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_ll_utils.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal_tim.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal_tim_ex.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_uart.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_hal_uart_ex.c</name>
       </file>
     </group>
   </group>

@@ -1,13 +1,13 @@
-"D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_hal_tim_ex.c"
+"D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_ll_exti.c"
 -std=c11
 -ferror-limit=0
 -fbracket-depth=512
 -funsigned-char
 -MD
 -MF
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\STM32G070\BrowseInfo\Drivers\STM32G0xx_HAL_Driver\stm32g0xx_hal_tim_ex.pbi.dep
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\STM32G070\BrowseInfo\Drivers\STM32G0xx_HAL_Driver\stm32g0xx_ll_exti.pbi.dep
 -o
-D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\STM32G070\BrowseInfo\Drivers\STM32G0xx_HAL_Driver\stm32g0xx_hal_tim_ex.pbi
+D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\STM32G070\BrowseInfo\Drivers\STM32G0xx_HAL_Driver\stm32g0xx_ll_exti.pbi
 -I
 D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\Drivers\STM32G0xx_HAL_Driver\Src
 -I
