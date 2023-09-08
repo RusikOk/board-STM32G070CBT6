@@ -168,7 +168,7 @@ int main(void)
                          LL_DMA_CHANNEL_3,
                          (uint32_t)spi1buf, LL_SPI_DMA_GetRegAddr(SPI1),
                          LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_3));
-  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_3, SPI1LEN);
+  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_3, SPI1LEN * sizeof(uint16_t));
 
   LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_3, LL_DMAMUX_REQ_SPI1_TX);
 
@@ -181,7 +181,7 @@ int main(void)
                         LL_DMA_PDATAALIGN_BYTE | LL_DMA_MDATAALIGN_BYTE);
   LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_1, LL_SPI_DMA_GetRegAddr(SPI1), (uint32_t)spi1buf,
                          LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1));
-  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, SPI1LEN);
+  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, SPI1LEN * sizeof(uint16_t));
   LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_1, LL_DMAMUX_REQ_SPI1_RX);
 
 
