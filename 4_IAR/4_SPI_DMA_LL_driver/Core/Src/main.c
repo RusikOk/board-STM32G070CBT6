@@ -149,7 +149,10 @@ int main(void)
   /* USER CODE END SysInit */
   
           for(uint16_t i = 0; i < SPI2LEN; i++) // генерируем набор данных для удобства отслеживания изменений в режиме отладки
+          {
                 spi2buf[i] = SPI2LEN - i - 1;
+                spi1buf[i] = i;
+          }
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
