@@ -31,9 +31,8 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define UART1LEN	8	        /* длина буфера для uart1 */
 #define SPI1LEN         1024	        /* длина буфера для spi1 */
-#define SPI2LEN         SPI1LEN * 2	/* длина буфера для spi2 */
+#define SPI2LEN         SPI1LEN 	/* длина буфера для spi2 */
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -42,13 +41,15 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+SPI_HandleTypeDef hspi2;
 
 /* USER CODE BEGIN PV */
-uint8_t         uart1buf[UART1LEN]; 
-uint16_t        spi1buf[SPI1LEN];       // master mode
-uint16_t        spi2buf[SPI2LEN];       // slave mode
-uint8_t         uart1index = 0;
+uint16_t        spi1buf[SPI1LEN];       // slave mode
+uint16_t        spi2buf[SPI2LEN];       // master mode
 uint16_t        spi2index = 0;		// индекс массива 
+
+__IO uint8_t ubTransmissionComplete = 0;
+__IO uint8_t ubReceptionComplete = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,7 +64,7 @@ static void MX_SPI2_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+/*void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
         //if(huart->Instance == USART1) // для быстродействия закоментируем проверку
 	{
@@ -80,6 +81,44 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
                 if(spi2index == SPI2LEN) // при заполнении буффера полностью отдаем данные по DMA начиная с середины и до конца массива
                         HAL_SPI_Transmit_DMA(&hspi2, (uint8_t *)&spi2buf[SPI2LEN / 2], SPI2LEN / 2); // slave transmit use NSS signal +
         }
+}*/
+
+/**
+  * @brief  Function called from DMA1 IRQ Handler when Rx transfer is completed
+  * @param  None
+  * @retval None
+  */
+void DMA1_ReceiveComplete_Callback(void)
+{
+  /* DMA Rx transfer completed */
+  ubReceptionComplete = 1;
+}
+
+/**
+  * @brief  Function called from DMA1 IRQ Handler when Tx transfer is completed
+  * @param  None
+  * @retval None
+  */
+void DMA1_TransmitComplete_Callback(void)
+{
+  /* DMA Tx transfer completed */
+  ubTransmissionComplete = 1;
+}
+
+/**
+  * @brief  Function called in case of error detected in SPI IT Handler
+  * @param  None
+  * @retval None
+  */
+void SPI1_TransferError_Callback(void)
+{
+  /* Disable DMA1 Rx Channel */
+  LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_3);
+
+  /* Disable DMA1 Tx Channel */
+  LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_1);
+  /* Set LED2 to Blinking mode to indicate error occurs */
+  //LED_Blinking(LED_BLINK_ERROR);
 }
 /* USER CODE END 0 */
 
@@ -108,6 +147,9 @@ int main(void)
   /* USER CODE BEGIN SysInit */
 
   /* USER CODE END SysInit */
+  
+          for(uint16_t i = 0; i < SPI2LEN; i++) // генерируем набор данных для удобства отслеживания изменений в режиме отладки
+                spi2buf[i] = SPI2LEN - i - 1;
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
@@ -115,26 +157,109 @@ int main(void)
   MX_SPI1_Init();
   MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-        
-        for(uint16_t i = 0; i < SPI2LEN; i++) // генерируем набор данных для удобства отслеживания изменений в режиме отладки
-                spi2buf[i] = SPI2LEN - i - 1;
-   
-        // прием данных SPI мастером по DMA 
-        //HAL_SPI_Receive_DMA(&hspi1, (uint8_t *)&spi1buf, SPI1LEN); // master receive use NSS signal +
   
-        // передача данных по SPI слейвом
-        //HAL_SPI_Transmit_DMA(&hspi1, (uint8_t *)&spi2buf, SPI2LEN); // master transmit +
-        //HAL_SPI_Transmit(&hspi1, (uint8_t *)&spi2buf, SPI2LEN, 5000); // master transmit +
-        HAL_SPI_Transmit_DMA(&hspi2, (uint8_t *)&spi2buf, SPI2LEN / 2); // slave transmit use NSS signal +
-        //HAL_SPI_Transmit(&hspi2, (uint8_t *)&spi2buf, SPI2LEN, 5000); // slave transmit use NSS signal +
+  /* Configure the DMA1_Channel3 functional parameters */
+  LL_DMA_ConfigTransfer(DMA1,
+                        LL_DMA_CHANNEL_3,
+                        LL_DMA_DIRECTION_MEMORY_TO_PERIPH | LL_DMA_PRIORITY_HIGH | LL_DMA_MODE_NORMAL |
+                        LL_DMA_PERIPH_NOINCREMENT | LL_DMA_MEMORY_INCREMENT |
+                        LL_DMA_PDATAALIGN_BYTE | LL_DMA_MDATAALIGN_BYTE);
+  LL_DMA_ConfigAddresses(DMA1,
+                         LL_DMA_CHANNEL_3,
+                         (uint32_t)spi1buf, LL_SPI_DMA_GetRegAddr(SPI1),
+                         LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_3));
+  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_3, SPI1LEN);
 
-        // прием данных мастером
-        //HAL_SPI_Receive_DMA(&hspi2, (uint8_t *)&spi1buf, SPI1LEN); // slave receave -
-        //HAL_SPI_Receive(&hspi2, (uint8_t *)&spi1buf, SPI1LEN, 5000); // slave receive +
-        HAL_SPI_Receive(&hspi1, (uint8_t *)&spi1buf, SPI1LEN, 5000); // master receive use NSS signal +
+  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_3, LL_DMAMUX_REQ_SPI1_TX);
+
+
+  /* Configure the DMA1_Channel1 functional parameters */
+  LL_DMA_ConfigTransfer(DMA1,
+                        LL_DMA_CHANNEL_1,
+                        LL_DMA_DIRECTION_PERIPH_TO_MEMORY | LL_DMA_PRIORITY_HIGH | LL_DMA_MODE_NORMAL |
+                        LL_DMA_PERIPH_NOINCREMENT | LL_DMA_MEMORY_INCREMENT |
+                        LL_DMA_PDATAALIGN_BYTE | LL_DMA_MDATAALIGN_BYTE);
+  LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_1, LL_SPI_DMA_GetRegAddr(SPI1), (uint32_t)spi1buf,
+                         LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1));
+  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, SPI1LEN);
+  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_1, LL_DMAMUX_REQ_SPI1_RX);
+
+
+  /* Enable DMA interrupts complete/error */
+  LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_3);
+  LL_DMA_EnableIT_TE(DMA1, LL_DMA_CHANNEL_3);
+  LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_1);
+  LL_DMA_EnableIT_TE(DMA1, LL_DMA_CHANNEL_1);
+
+  /* Initialize FFIFO Threshold */
+  LL_SPI_SetRxFIFOThreshold(SPI1, LL_SPI_RX_FIFO_TH_QUARTER);
+
+  /* Configure SPI1 DMA transfer interrupts */
+  /* Enable DMA TX Interrupt */
+  LL_SPI_EnableDMAReq_TX(SPI1);
+
+  /* Configure SPI1 DMA transfer interrupts */
+  /* Enable DMA RX Interrupt */
+  LL_SPI_EnableDMAReq_RX(SPI1);
+
+  /* Enable the SPI1 peripheral */
+  
+   /* Enable SPI1 */
+  LL_SPI_Enable(SPI1);
+
+  /* Enable DMA Channels */
+  LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_3);
+  LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_1);
+
+  
+  
+  
+  
+  
+  
+  
+  
+          // передача данных по SPI мастером
+        //HAL_SPI_Transmit_DMA(&hspi2, (uint8_t *)&spi2buf, SPI2LEN); // slave transmit use NSS signal +
+        HAL_SPI_TransmitReceive(&hspi2, (uint8_t *)&spi2buf, (uint8_t *)&spi2buf, SPI2LEN, 5000); // slave transmit use NSS signal +
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  /* Wait for the end of the transfer and check received data */
+{
+  /* 1 - Wait end of transmission */
+  while(ubTransmissionComplete != 1);
+  /* Disable DMA1 Tx Channel */
+  LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_1);
+  
+  /* 2 - Wait end of reception */
+  while(ubReceptionComplete != 1);
+  
+  /* Disable DMA1 Rx Channel */
+  LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_3);
+  
+  
+  
+  
+  // тут можно проверять данные
+}
+  
+  
+  
+  
+
         
-        //HAL_UART_Receive_IT(&huart1, (uint8_t *)&uart1buf, 2); // получаем символ с прерывания UART
-        HAL_UART_Receive_IT(&huart1, (uint8_t *)&spi2buf[spi2index++], 2); // получаем 2 восьмибитных слова по прерыванию UART        
+
+  
+  
+
         
   /* USER CODE END 2 */
 
@@ -214,12 +339,10 @@ static void MX_SPI1_Init(void)
   LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_SPI1);
 
   LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA);
-  LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOB);
   /**SPI1 GPIO Configuration
   PA1   ------> SPI1_SCK
   PA2   ------> SPI1_MOSI
   PA6   ------> SPI1_MISO
-  PB0   ------> SPI1_NSS
   */
   GPIO_InitStruct.Pin = LL_GPIO_PIN_1;
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
@@ -241,26 +364,35 @@ static void MX_SPI1_Init(void)
   GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
   GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
   GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+  GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
   GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
   LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_0;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
-  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /* SPI1 DMA Init */
 
   /* SPI1_RX Init */
-  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_3, LL_DMAMUX_REQ_SPI1_RX);
+  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_1, LL_DMAMUX_REQ_SPI1_RX);
 
-  LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_3, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
+  LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
 
-  LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_3, LL_DMA_PRIORITY_VERYHIGH);
+  LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PRIORITY_MEDIUM);
+
+  LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MODE_NORMAL);
+
+  LL_DMA_SetPeriphIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PERIPH_NOINCREMENT);
+
+  LL_DMA_SetMemoryIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MEMORY_INCREMENT);
+
+  LL_DMA_SetPeriphSize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PDATAALIGN_HALFWORD);
+
+  LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MDATAALIGN_HALFWORD);
+
+  /* SPI1_TX Init */
+  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_3, LL_DMAMUX_REQ_SPI1_TX);
+
+  LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_3, LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
+
+  LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_3, LL_DMA_PRIORITY_MEDIUM);
 
   LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_3, LL_DMA_MODE_NORMAL);
 
@@ -272,23 +404,6 @@ static void MX_SPI1_Init(void)
 
   LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_3, LL_DMA_MDATAALIGN_HALFWORD);
 
-  /* SPI1_TX Init */
-  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_4, LL_DMAMUX_REQ_SPI1_TX);
-
-  LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_4, LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
-
-  LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_4, LL_DMA_PRIORITY_LOW);
-
-  LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_4, LL_DMA_MODE_NORMAL);
-
-  LL_DMA_SetPeriphIncMode(DMA1, LL_DMA_CHANNEL_4, LL_DMA_PERIPH_NOINCREMENT);
-
-  LL_DMA_SetMemoryIncMode(DMA1, LL_DMA_CHANNEL_4, LL_DMA_MEMORY_INCREMENT);
-
-  LL_DMA_SetPeriphSize(DMA1, LL_DMA_CHANNEL_4, LL_DMA_PDATAALIGN_HALFWORD);
-
-  LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_4, LL_DMA_MDATAALIGN_HALFWORD);
-
   /* SPI1 interrupt Init */
   NVIC_SetPriority(SPI1_IRQn, 0);
   NVIC_EnableIRQ(SPI1_IRQn);
@@ -298,12 +413,11 @@ static void MX_SPI1_Init(void)
   /* USER CODE END SPI1_Init 1 */
   /* SPI1 parameter configuration*/
   SPI_InitStruct.TransferDirection = LL_SPI_FULL_DUPLEX;
-  SPI_InitStruct.Mode = LL_SPI_MODE_MASTER;
+  SPI_InitStruct.Mode = LL_SPI_MODE_SLAVE;
   SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_16BIT;
   SPI_InitStruct.ClockPolarity = LL_SPI_POLARITY_LOW;
   SPI_InitStruct.ClockPhase = LL_SPI_PHASE_1EDGE;
-  SPI_InitStruct.NSS = LL_SPI_NSS_HARD_OUTPUT;
-  SPI_InitStruct.BaudRate = LL_SPI_BAUDRATEPRESCALER_DIV2;
+  SPI_InitStruct.NSS = LL_SPI_NSS_SOFT;
   SPI_InitStruct.BitOrder = LL_SPI_MSB_FIRST;
   SPI_InitStruct.CRCCalculation = LL_SPI_CRCCALCULATION_DISABLE;
   SPI_InitStruct.CRCPoly = 7;
@@ -328,109 +442,28 @@ static void MX_SPI2_Init(void)
 
   /* USER CODE END SPI2_Init 0 */
 
-  LL_SPI_InitTypeDef SPI_InitStruct = {0};
-
-  LL_GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  /* Peripheral clock enable */
-  LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_SPI2);
-
-  LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA);
-  LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOB);
-  /**SPI2 GPIO Configuration
-  PA0   ------> SPI2_SCK
-  PA3   ------> SPI2_MISO
-  PA4   ------> SPI2_MOSI
-  PB12   ------> SPI2_NSS
-  */
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_0;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_3;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_4;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_1;
-  LL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  GPIO_InitStruct.Pin = LL_GPIO_PIN_12;
-  GPIO_InitStruct.Mode = LL_GPIO_MODE_ALTERNATE;
-  GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
-  GPIO_InitStruct.OutputType = LL_GPIO_OUTPUT_PUSHPULL;
-  GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
-  GPIO_InitStruct.Alternate = LL_GPIO_AF_0;
-  LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-  /* SPI2 DMA Init */
-
-  /* SPI2_RX Init */
-  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_1, LL_DMAMUX_REQ_SPI2_RX);
-
-  LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY);
-
-  LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PRIORITY_HIGH);
-
-  LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MODE_NORMAL);
-
-  LL_DMA_SetPeriphIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PERIPH_NOINCREMENT);
-
-  LL_DMA_SetMemoryIncMode(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MEMORY_INCREMENT);
-
-  LL_DMA_SetPeriphSize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_PDATAALIGN_HALFWORD);
-
-  LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MDATAALIGN_HALFWORD);
-
-  /* SPI2_TX Init */
-  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_2, LL_DMAMUX_REQ_SPI2_TX);
-
-  LL_DMA_SetDataTransferDirection(DMA1, LL_DMA_CHANNEL_2, LL_DMA_DIRECTION_MEMORY_TO_PERIPH);
-
-  LL_DMA_SetChannelPriorityLevel(DMA1, LL_DMA_CHANNEL_2, LL_DMA_PRIORITY_LOW);
-
-  LL_DMA_SetMode(DMA1, LL_DMA_CHANNEL_2, LL_DMA_MODE_NORMAL);
-
-  LL_DMA_SetPeriphIncMode(DMA1, LL_DMA_CHANNEL_2, LL_DMA_PERIPH_NOINCREMENT);
-
-  LL_DMA_SetMemoryIncMode(DMA1, LL_DMA_CHANNEL_2, LL_DMA_MEMORY_INCREMENT);
-
-  LL_DMA_SetPeriphSize(DMA1, LL_DMA_CHANNEL_2, LL_DMA_PDATAALIGN_HALFWORD);
-
-  LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_2, LL_DMA_MDATAALIGN_HALFWORD);
-
-  /* SPI2 interrupt Init */
-  NVIC_SetPriority(SPI2_IRQn, 0);
-  NVIC_EnableIRQ(SPI2_IRQn);
-
   /* USER CODE BEGIN SPI2_Init 1 */
 
   /* USER CODE END SPI2_Init 1 */
   /* SPI2 parameter configuration*/
-  SPI_InitStruct.TransferDirection = LL_SPI_FULL_DUPLEX;
-  SPI_InitStruct.Mode = LL_SPI_MODE_SLAVE;
-  SPI_InitStruct.DataWidth = LL_SPI_DATAWIDTH_16BIT;
-  SPI_InitStruct.ClockPolarity = LL_SPI_POLARITY_LOW;
-  SPI_InitStruct.ClockPhase = LL_SPI_PHASE_1EDGE;
-  SPI_InitStruct.NSS = LL_SPI_NSS_HARD_INPUT;
-  SPI_InitStruct.BitOrder = LL_SPI_MSB_FIRST;
-  SPI_InitStruct.CRCCalculation = LL_SPI_CRCCALCULATION_DISABLE;
-  SPI_InitStruct.CRCPoly = 7;
-  LL_SPI_Init(SPI2, &SPI_InitStruct);
-  LL_SPI_SetStandard(SPI2, LL_SPI_PROTOCOL_MOTOROLA);
-  LL_SPI_DisableNSSPulseMgt(SPI2);
+  hspi2.Instance = SPI2;
+  hspi2.Init.Mode = SPI_MODE_MASTER;
+  hspi2.Init.Direction = SPI_DIRECTION_2LINES;
+  hspi2.Init.DataSize = SPI_DATASIZE_16BIT;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
+  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.NSS = SPI_NSS_HARD_INPUT;
+  hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_2;
+  hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
+  hspi2.Init.TIMode = SPI_TIMODE_DISABLE;
+  hspi2.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+  hspi2.Init.CRCPolynomial = 7;
+  hspi2.Init.CRCLength = SPI_CRC_LENGTH_DATASIZE;
+  hspi2.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
+  if (HAL_SPI_Init(&hspi2) != HAL_OK)
+  {
+    Error_Handler();
+  }
   /* USER CODE BEGIN SPI2_Init 2 */
 
   /* USER CODE END SPI2_Init 2 */
@@ -454,9 +487,6 @@ static void MX_DMA_Init(void)
   /* DMA1_Channel2_3_IRQn interrupt configuration */
   NVIC_SetPriority(DMA1_Channel2_3_IRQn, 0);
   NVIC_EnableIRQ(DMA1_Channel2_3_IRQn);
-  /* DMA1_Ch4_7_DMAMUX1_OVR_IRQn interrupt configuration */
-  NVIC_SetPriority(DMA1_Ch4_7_DMAMUX1_OVR_IRQn, 0);
-  NVIC_EnableIRQ(DMA1_Ch4_7_DMAMUX1_OVR_IRQn);
 
 }
 

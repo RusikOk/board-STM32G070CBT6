@@ -37,4 +37,6 @@ D:\work\РАЗРАБОТКИ\board\ STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWAR
   D:\work\РАЗРАБОТКИ\board\ STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_flash_ex.h \
   D:\work\РАЗРАБОТКИ\board\ STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_pwr.h \
   D:\work\РАЗРАБОТКИ\board\ STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_pwr_ex.h \
+  D:\work\РАЗРАБОТКИ\board\ STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_spi.h \
+  D:\work\РАЗРАБОТКИ\board\ STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_hal_spi_ex.h \
   D:\work\РАЗРАБОТКИ\board\ STM32G070CBT6\4_IAR\4_SPI_DMA_LL_driver\EWARM\..\Drivers\STM32G0xx_HAL_Driver\Inc\stm32g0xx_ll_bus.h

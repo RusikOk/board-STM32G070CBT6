@@ -46,6 +46,7 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
+/* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
 
@@ -55,7 +56,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
-
+extern SPI_HandleTypeDef hspi2;
 /* USER CODE BEGIN EV */
 
 /* USER CODE END EV */
@@ -146,7 +147,17 @@ void SysTick_Handler(void)
 void DMA1_Channel1_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
-
+  if (LL_DMA_IsActiveFlag_TC1(DMA1))
+  {
+    LL_DMA_ClearFlag_TC1(DMA1);
+    /* Call function Transmission complete Callback */
+    DMA1_TransmitComplete_Callback();
+  }
+  else if (LL_DMA_IsActiveFlag_TE1(DMA1))
+  {
+    /* Call Error function */
+    SPI1_TransferError_Callback();
+  }
   /* USER CODE END DMA1_Channel1_IRQn 0 */
 
   /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
@@ -160,26 +171,22 @@ void DMA1_Channel1_IRQHandler(void)
 void DMA1_Channel2_3_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel2_3_IRQn 0 */
-
+  if (LL_DMA_IsActiveFlag_TC3(DMA1))
+  {
+    LL_DMA_ClearFlag_TC3(DMA1);
+    /* Call function Reception complete Callback */
+    DMA1_ReceiveComplete_Callback();
+  }
+  else if (LL_DMA_IsActiveFlag_TE3(DMA1))
+  {
+    /* Call Error function */
+    SPI1_TransferError_Callback();
+  }
   /* USER CODE END DMA1_Channel2_3_IRQn 0 */
 
   /* USER CODE BEGIN DMA1_Channel2_3_IRQn 1 */
 
   /* USER CODE END DMA1_Channel2_3_IRQn 1 */
-}
-
-/**
-  * @brief This function handles DMA1 channel 4, channel 5, channel 6, channel 7 and DMAMUX1 interrupts.
-  */
-void DMA1_Ch4_7_DMAMUX1_OVR_IRQHandler(void)
-{
-  /* USER CODE BEGIN DMA1_Ch4_7_DMAMUX1_OVR_IRQn 0 */
-
-  /* USER CODE END DMA1_Ch4_7_DMAMUX1_OVR_IRQn 0 */
-
-  /* USER CODE BEGIN DMA1_Ch4_7_DMAMUX1_OVR_IRQn 1 */
-
-  /* USER CODE END DMA1_Ch4_7_DMAMUX1_OVR_IRQn 1 */
 }
 
 /**
@@ -203,6 +210,7 @@ void SPI2_IRQHandler(void)
   /* USER CODE BEGIN SPI2_IRQn 0 */
 
   /* USER CODE END SPI2_IRQn 0 */
+  HAL_SPI_IRQHandler(&hspi2);
   /* USER CODE BEGIN SPI2_IRQn 1 */
 
   /* USER CODE END SPI2_IRQn 1 */
