@@ -147,14 +147,19 @@ void SysTick_Handler(void)
 void DMA1_Channel1_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
+  // ch1 -> rx
   if (LL_DMA_IsActiveFlag_TC1(DMA1))
   {
     LL_DMA_ClearFlag_TC1(DMA1);
+    /* Disable DMA1 Tx Channel */
+    LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_1);
     /* Call function Transmission complete Callback */
-    DMA1_TransmitComplete_Callback();
+    DMA1_ReceiveComplete_Callback();
   }
   else if (LL_DMA_IsActiveFlag_TE1(DMA1))
   {
+    LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_3);
+    LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_1);
     /* Call Error function */
     SPI1_TransferError_Callback();
   }
@@ -171,14 +176,19 @@ void DMA1_Channel1_IRQHandler(void)
 void DMA1_Channel2_3_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel2_3_IRQn 0 */
-  if (LL_DMA_IsActiveFlag_TC3(DMA1))
+  // ch3 -> tx
+  if(LL_DMA_IsActiveFlag_TC3(DMA1))
   {
     LL_DMA_ClearFlag_TC3(DMA1);
+    /* Disable DMA1 Rx Channel */
+    LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_3);
     /* Call function Reception complete Callback */
-    DMA1_ReceiveComplete_Callback();
+    DMA1_TransmitComplete_Callback();
   }
-  else if (LL_DMA_IsActiveFlag_TE3(DMA1))
+  else if(LL_DMA_IsActiveFlag_TE3(DMA1))
   {
+    LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_3);
+    LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_1);
     /* Call Error function */
     SPI1_TransferError_Callback();
   }

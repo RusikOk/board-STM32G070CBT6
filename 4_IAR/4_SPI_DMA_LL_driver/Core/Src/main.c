@@ -31,7 +31,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SPI1LEN         1024	        /* длина буфера для spi1 */
+#define SPI1LEN         8	        /* длина буфера для spi1 */
 #define SPI2LEN         SPI1LEN 	/* длина буфера для spi2 */
 /* USER CODE END PD */
 
@@ -112,11 +112,6 @@ void DMA1_TransmitComplete_Callback(void)
   */
 void SPI1_TransferError_Callback(void)
 {
-  /* Disable DMA1 Rx Channel */
-  LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_3);
-
-  /* Disable DMA1 Tx Channel */
-  LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_1);
   /* Set LED2 to Blinking mode to indicate error occurs */
   //LED_Blinking(LED_BLINK_ERROR);
 }
@@ -150,8 +145,8 @@ int main(void)
   
           for(uint16_t i = 0; i < SPI2LEN; i++) // генерируем набор данных для удобства отслеживания изменений в режиме отладки
           {
-                spi2buf[i] = SPI2LEN - i - 1;
-                spi1buf[i] = i;
+                spi2buf[i] = SPI2LEN - i - 1 + 1024;
+                spi1buf[i] = i + 1024;
           }
 
   /* Initialize all configured peripherals */
@@ -162,31 +157,16 @@ int main(void)
   /* USER CODE BEGIN 2 */
   
   /* Configure the DMA1_Channel3 functional parameters */
-  LL_DMA_ConfigTransfer(DMA1,
-                        LL_DMA_CHANNEL_3,
-                        LL_DMA_DIRECTION_MEMORY_TO_PERIPH | LL_DMA_PRIORITY_HIGH | LL_DMA_MODE_NORMAL |
-                        LL_DMA_PERIPH_NOINCREMENT | LL_DMA_MEMORY_INCREMENT |
-                        LL_DMA_PDATAALIGN_BYTE | LL_DMA_MDATAALIGN_BYTE);
-  LL_DMA_ConfigAddresses(DMA1,
-                         LL_DMA_CHANNEL_3,
-                         (uint32_t)spi1buf, LL_SPI_DMA_GetRegAddr(SPI1),
-                         LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_3));
-  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_3, SPI1LEN * sizeof(uint16_t));
-
-  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_3, LL_DMAMUX_REQ_SPI1_TX);
-
+  LL_DMA_ConfigTransfer(DMA1, LL_DMA_CHANNEL_3, LL_DMA_DIRECTION_MEMORY_TO_PERIPH | LL_DMA_PRIORITY_HIGH | LL_DMA_MODE_NORMAL | LL_DMA_PERIPH_NOINCREMENT | LL_DMA_MEMORY_INCREMENT | LL_DMA_PDATAALIGN_HALFWORD | LL_DMA_MDATAALIGN_HALFWORD);
+  LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_3, (uint32_t)&spi1buf, LL_SPI_DMA_GetRegAddr(SPI1), LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_3));
+  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_3, SPI1LEN);
+  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_3, LL_DMAMUX_REQ_SPI1_TX); // ch3 -> tx
 
   /* Configure the DMA1_Channel1 functional parameters */
-  LL_DMA_ConfigTransfer(DMA1,
-                        LL_DMA_CHANNEL_1,
-                        LL_DMA_DIRECTION_PERIPH_TO_MEMORY | LL_DMA_PRIORITY_HIGH | LL_DMA_MODE_NORMAL |
-                        LL_DMA_PERIPH_NOINCREMENT | LL_DMA_MEMORY_INCREMENT |
-                        LL_DMA_PDATAALIGN_BYTE | LL_DMA_MDATAALIGN_BYTE);
-  LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_1, LL_SPI_DMA_GetRegAddr(SPI1), (uint32_t)spi1buf,
-                         LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1));
-  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, SPI1LEN * sizeof(uint16_t));
-  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_1, LL_DMAMUX_REQ_SPI1_RX);
-
+  LL_DMA_ConfigTransfer(DMA1, LL_DMA_CHANNEL_1, LL_DMA_DIRECTION_PERIPH_TO_MEMORY | LL_DMA_PRIORITY_HIGH | LL_DMA_MODE_NORMAL | LL_DMA_PERIPH_NOINCREMENT | LL_DMA_MEMORY_INCREMENT | LL_DMA_PDATAALIGN_HALFWORD | LL_DMA_MDATAALIGN_HALFWORD);
+  LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_1, LL_SPI_DMA_GetRegAddr(SPI1), (uint32_t)&spi1buf, LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1));
+  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, SPI1LEN);
+  LL_DMA_SetPeriphRequest(DMA1, LL_DMA_CHANNEL_1, LL_DMAMUX_REQ_SPI1_RX); // ch1 -> rx
 
   /* Enable DMA interrupts complete/error */
   LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_3);
@@ -195,7 +175,7 @@ int main(void)
   LL_DMA_EnableIT_TE(DMA1, LL_DMA_CHANNEL_1);
 
   /* Initialize FFIFO Threshold */
-  LL_SPI_SetRxFIFOThreshold(SPI1, LL_SPI_RX_FIFO_TH_QUARTER);
+  LL_SPI_SetRxFIFOThreshold(SPI1, LL_SPI_RX_FIFO_TH_HALF);
 
   /* Configure SPI1 DMA transfer interrupts */
   /* Enable DMA TX Interrupt */
@@ -239,31 +219,16 @@ int main(void)
 {
   /* 1 - Wait end of transmission */
   while(ubTransmissionComplete != 1);
-  /* Disable DMA1 Tx Channel */
-  LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_1);
-  
   /* 2 - Wait end of reception */
   while(ubReceptionComplete != 1);
   
-  /* Disable DMA1 Rx Channel */
-  LL_DMA_DisableChannel(DMA1, LL_DMA_CHANNEL_3);
+  
   
   
   
   
   // тут можно проверять данные
 }
-  
-  
-  
-  
-
-        
-
-  
-  
-
-        
   /* USER CODE END 2 */
 
   /* Infinite loop */
