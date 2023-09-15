@@ -224,7 +224,7 @@
                     <item>spi1buf</item>
                     <item>spi2buf</item>
                     <item>spi2index</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>
