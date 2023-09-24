@@ -2,7 +2,7 @@
 
 "C:\Program Files\IAR Systems\Embedded Workbench 9.20\arm\bin\armJLINK.dll" 
 
-"D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\3_UART_2byte_LLdriver\EWARM\STM32G070\Exe\STM32G070.out" 
+"D:\work\РАЗРАБОТКИ\board STM32G070CBT6\4_IAR\5_UART_DMA_2byte_LLdriver\EWARM\STM32G070\Exe\STM32G070.out" 
 
 --plugin="C:\Program Files\IAR Systems\Embedded Workbench 9.20\arm\bin\armbat.dll" 
 

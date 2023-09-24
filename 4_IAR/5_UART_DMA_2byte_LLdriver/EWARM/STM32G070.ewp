@@ -1113,6 +1113,9 @@
         <name>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_ll_exti.c</name>
       </file>
       <file>
+        <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_ll_dma.c</name>
+      </file>
+      <file>
         <name>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_ll_pwr.c</name>
       </file>
       <file>
@@ -1120,9 +1123,6 @@
       </file>
       <file>
         <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_ll_rcc.c</name>
-      </file>
-      <file>
-        <name>$PROJ_DIR$\..\Drivers\STM32G0xx_HAL_Driver\Src\stm32g0xx_ll_dma.c</name>
       </file>
       <file>
         <name>$PROJ_DIR$/../Drivers/STM32G0xx_HAL_Driver/Src/stm32g0xx_ll_utils.c</name>
