@@ -151,18 +151,18 @@ void DMA1_Channel1_IRQHandler(void)
   if(LL_DMA_IsActiveFlag_HT1(DMA1))
   {
     LL_DMA_ClearFlag_HT1(DMA1);
-    /* Call function Transmission complete Callback */
-    //addToBuf(*((trace_t *)&uartBuf[2]));
+    // Call function half transfer Callback
+    //addToBuf(*((trace_t *)&uartBuf[0]));
   }
   else if(LL_DMA_IsActiveFlag_TC1(DMA1))
   {
     LL_DMA_ClearFlag_TC1(DMA1);
-    /* Call function Transmission complete Callback */
-    //addToBuf(*((trace_t *)&uartBuf[0]));
+    // Call function Transmission complete Callback
+    //addToBuf(*((trace_t *)&uartBuf[2]));
   }
   else if(LL_DMA_IsActiveFlag_TE1(DMA1))
   {
-    /* Call Error function */
+    // Call Error function
   }
   /* USER CODE END DMA1_Channel1_IRQn 0 */
 

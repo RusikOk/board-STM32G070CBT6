@@ -222,7 +222,7 @@
                 <expressions>
                     <item>uart1index</item>
                     <item>uart1buf</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>
@@ -255,7 +255,7 @@
                 <expressions>
                     <item>spi2buf</item>
                     <item>spi1buf</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>
