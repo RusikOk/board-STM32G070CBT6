@@ -42,7 +42,6 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 extern u8u16_t         uart1buf;
-extern uint16_t        uart1index;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -147,29 +146,29 @@ void SysTick_Handler(void)
 void DMA1_Channel1_IRQHandler(void)
 {
   /* USER CODE BEGIN DMA1_Channel1_IRQn 0 */
-
+  asm("nop"); // для брекпоинта
+  
+  if(LL_DMA_IsActiveFlag_HT1(DMA1))
+  {
+    LL_DMA_ClearFlag_HT1(DMA1);
+    /* Call function Transmission complete Callback */
+    //addToBuf(*((trace_t *)&uartBuf[2]));
+  }
+  else if(LL_DMA_IsActiveFlag_TC1(DMA1))
+  {
+    LL_DMA_ClearFlag_TC1(DMA1);
+    /* Call function Transmission complete Callback */
+    //addToBuf(*((trace_t *)&uartBuf[0]));
+  }
+  else if(LL_DMA_IsActiveFlag_TE1(DMA1))
+  {
+    /* Call Error function */
+  }
   /* USER CODE END DMA1_Channel1_IRQn 0 */
 
   /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
 
   /* USER CODE END DMA1_Channel1_IRQn 1 */
-}
-
-/**
-  * @brief This function handles USART1 global interrupt / USART1 wake-up interrupt through EXTI line 25.
-  */
-void USART1_IRQHandler(void)
-{
-  /* USER CODE BEGIN USART1_IRQn 0 */
-	if(LL_USART_IsActiveFlag_RXNE(USART1) && LL_USART_IsEnabledIT_RXNE(USART1))
-	{
-                uart1buf.u8[uart1index++] = LL_USART_ReceiveData8(USART1);
-                uart1index %= UART1LEN; // не допускаем выхода за пределы массива
-	}
-  /* USER CODE END USART1_IRQn 0 */
-  /* USER CODE BEGIN USART1_IRQn 1 */
-
-  /* USER CODE END USART1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

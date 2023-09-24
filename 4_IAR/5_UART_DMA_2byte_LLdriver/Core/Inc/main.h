@@ -49,7 +49,7 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-#define UART1LEN	32	        /* длина буфера для uart1 */
+#define UART1LEN	4	        /* длина буфера для uart1 */
         
 typedef union 
 {

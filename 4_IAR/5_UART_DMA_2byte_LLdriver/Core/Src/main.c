@@ -43,7 +43,6 @@
 
 /* USER CODE BEGIN PV */
 u8u16_t         uart1buf;
-uint16_t        uart1index;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -95,10 +94,7 @@ int main(void)
   MX_DMA_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-
-        uart1index = 0;
-        LL_USART_EnableIT_RXNE(USART1); // включаем прерывание по приему байта от UART
-        
+     
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -214,24 +210,33 @@ static void MX_USART1_UART_Init(void)
 
   LL_DMA_SetMemorySize(DMA1, LL_DMA_CHANNEL_1, LL_DMA_MDATAALIGN_BYTE);
 
-  /* USART1 interrupt Init */
-  NVIC_SetPriority(USART1_IRQn, 0);
-  NVIC_EnableIRQ(USART1_IRQn);
-
   /* USER CODE BEGIN USART1_Init 1 */
+  
+  
+  // rusikok 
+  
+  /* Configure the DMA functional parameters for reception */
+  LL_DMA_ConfigAddresses(DMA1, LL_DMA_CHANNEL_1, LL_USART_DMA_GetRegAddr(USART1, LL_USART_DMA_REG_DATA_RECEIVE), (uint32_t)&uart1buf, LL_DMA_GetDataTransferDirection(DMA1, LL_DMA_CHANNEL_1));
+  LL_DMA_SetDataLength(DMA1, LL_DMA_CHANNEL_1, sizeof(uart1buf));
 
+  /* Enable DMA transfer complete/error interrupts  */
+  LL_DMA_EnableIT_TC(DMA1, LL_DMA_CHANNEL_1);
+  LL_DMA_EnableIT_HT(DMA1, LL_DMA_CHANNEL_1);
+  LL_DMA_EnableIT_TE(DMA1, LL_DMA_CHANNEL_1);  
+  
+  
   /* USER CODE END USART1_Init 1 */
   USART_InitStruct.PrescalerValue = LL_USART_PRESCALER_DIV1;
   USART_InitStruct.BaudRate = 2000000;
   USART_InitStruct.DataWidth = LL_USART_DATAWIDTH_8B;
   USART_InitStruct.StopBits = LL_USART_STOPBITS_1;
   USART_InitStruct.Parity = LL_USART_PARITY_NONE;
-  USART_InitStruct.TransferDirection = LL_USART_DIRECTION_TX_RX;
+  USART_InitStruct.TransferDirection = LL_USART_DIRECTION_RX;
   USART_InitStruct.HardwareFlowControl = LL_USART_HWCONTROL_NONE;
-  USART_InitStruct.OverSampling = LL_USART_OVERSAMPLING_16;
+  USART_InitStruct.OverSampling = LL_USART_OVERSAMPLING_8;
   LL_USART_Init(USART1, &USART_InitStruct);
   LL_USART_SetTXFIFOThreshold(USART1, LL_USART_FIFOTHRESHOLD_1_8);
-  LL_USART_SetRXFIFOThreshold(USART1, LL_USART_FIFOTHRESHOLD_1_8);
+  LL_USART_SetRXFIFOThreshold(USART1, LL_USART_FIFOTHRESHOLD_8_8);
   LL_USART_EnableFIFO(USART1);
   LL_USART_ConfigAsyncMode(USART1);
 
@@ -242,10 +247,16 @@ static void MX_USART1_UART_Init(void)
   LL_USART_Enable(USART1);
 
   /* Polling USART1 initialisation */
-  while((!(LL_USART_IsActiveFlag_TEACK(USART1))) || (!(LL_USART_IsActiveFlag_REACK(USART1))))
+  while(!(LL_USART_IsActiveFlag_REACK(USART1)))
   {
   }
   /* USER CODE BEGIN USART1_Init 2 */
+  
+  
+  
+  // rusikok
+  LL_USART_EnableDMAReq_RX(USART1); // Enable DMA RX Interrupt
+  LL_DMA_EnableChannel(DMA1, LL_DMA_CHANNEL_1); // Enable DMA Channel Rx
 
   /* USER CODE END USART1_Init 2 */
 
