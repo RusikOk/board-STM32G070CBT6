@@ -240,7 +240,7 @@
                     <item>slaveTxBuf</item>
                     <item>slaveRxBuf</item>
                     <item>time</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>
@@ -274,7 +274,7 @@
                     <item>spi2buf</item>
                     <item>spi1buf</item>
                     <item>time</item>
-                    <item></item>
+                    <item />
                 </expressions>
                 <col-names>
                     <item>Expression</item>

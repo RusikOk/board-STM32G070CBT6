@@ -5,11 +5,11 @@
     <configuration>
         <name>STM32G070</name>
         <outputs>
-            <file>$PROJ_DIR$\startup_stm32g070xx.s</file>
-            <file>$PROJ_DIR$\..\Core\Src\stm32g0xx_hal_msp.c</file>
-            <file>$PROJ_DIR$\..\Core\Src\main.c</file>
             <file>$PROJ_DIR$\..\Core\Src\stm32g0xx_it.c</file>
+            <file>$PROJ_DIR$\..\Core\Src\stm32g0xx_hal_msp.c</file>
             <file>$PROJ_DIR$\..\Core\Src\system_stm32g0xx.c</file>
+            <file>$PROJ_DIR$\..\Core\Src\main.c</file>
+            <file>$PROJ_DIR$\startup_stm32g070xx.s</file>
         </outputs>
         <forcedrebuild>
             <name>[REBUILD_ALL]</name>
